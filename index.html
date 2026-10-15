@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Umbra AI Studio</title>
+<meta name="description" content="סטודיו לאוטומציה ובינה מלאכותית: סוכני AI, אוטומציות, בוטים לוואטסאפ ומאגרי ידע חכמים לעסקים.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&family=Assistant:wght@300;400;600&display=swap">
+<style>
+/* Layout: a dark chamber. Asymmetric hero (copy right, arched portrait emerging from a particle sphere left),
+   then alternating layout families: marquee strip, bento, scroll-lit manifesto, process rail, editorial split, FAQ, contact split. */
+:root {
+  color-scheme: dark;
+  --ink: #0c0a12;          /* page ground, violet-biased near-black */
+  --raised: #14111d;       /* cards, inputs */
+  --raised-2: #1b1727;
+  --fg: #ece8f4;           /* primary text */
+  --muted: #9d96b0;        /* secondary text */
+  --line: rgba(196, 182, 255, 0.10);
+  --line-strong: rgba(196, 182, 255, 0.22);
+  --violet: #a48bff;       /* the one accent */
+  --violet-deep: #5b40d8;
+  --plum: #2a1846;         /* atmosphere only */
+  --on-light: #120e1c;
+  --halo: #ece6ff;         /* primary button fill */
+
+  --display: "Rubik", "Heebo", "Arial Hebrew", system-ui, sans-serif;
+  --body: "Assistant", "Heebo", "Arial Hebrew", system-ui, sans-serif;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --radius-card: 20px;     /* shape rule: buttons pill, cards 20px, inputs 12px, portrait arch */
+  --radius-input: 12px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--ink); color: var(--fg); font-family: var(--body); font-size: 18px; line-height: 1.7; font-weight: 400; -webkit-font-smoothing: antialiased; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+.site { position: relative; overflow-x: clip; }
+.site::after { /* film grain, fixed and non-interactive */
+  content: ""; position: fixed; inset: 0; z-index: 40; pointer-events: none; opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--violet); outline-offset: 3px; border-radius: 6px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h1, h2 { font-weight: 300; }
+p { margin: 0; }
+
+.wrap {
+  width: 100%; max-width: 1240px; margin-inline: auto;
+  padding-left: max(clamp(16px, 4vw, 40px), env(safe-area-inset-left, 0px));
+  padding-right: max(clamp(16px, 4vw, 40px), env(safe-area-inset-right, 0px));
+}
+section { padding-block: clamp(72px, 10vw, 136px); }
+.eyebrow { font-size: 0.8rem; font-weight: 500; letter-spacing: 0.08em; color: var(--violet); }
+.lede { color: var(--muted); max-width: 58ch; font-size: 1.0625rem; }
+.h2 { font-size: clamp(2rem, 3.6vw, 3.1rem); line-height: 1.15; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  height: 52px; padding-inline: 26px; border-radius: 999px; white-space: nowrap;
+  font: 500 1rem/1 var(--body); cursor: pointer; border: 1px solid transparent;
+  transition: transform 160ms var(--ease-out), background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--halo); color: var(--on-light); box-shadow: inset 0 0 0 1px rgba(255,255,255,.6), 0 10px 40px -12px rgba(164,139,255,.6); }
+.btn-ghost { background: transparent; color: var(--fg); border-color: var(--line-strong); }
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover { background: #fff; }
+  .btn-ghost:hover { border-color: var(--violet); color: #fff; }
+}
+.btn .arrow { transition: transform 200ms var(--ease-out); }
+@media (hover: hover) and (pointer: fine) { .btn:hover .arrow { transform: translateX(-4px); } }
+
+/* Header */
+.header {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30;
+  background: rgba(12, 10, 18, 0.72); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--line);
+}
+.header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 68px; }
+.brand { display: inline-flex; align-items: center; gap: 12px; }
+.brand-mark { /* an eclipse: the studio's namesake */
+  width: 26px; height: 26px; border-radius: 50%; background: var(--ink);
+  box-shadow: 0 0 0 1px var(--line-strong), -4px -3px 0 -1px var(--violet) inset, 0 0 18px -2px rgba(164,139,255,.55);
+}
+.brand-name { font-family: var(--display); font-size: 1.05rem; font-weight: 500; letter-spacing: 0.34em; direction: ltr; }
+.nav { display: flex; gap: 32px; font-size: 0.95rem; color: var(--muted); }
+.nav a { transition: color 200ms ease; }
+@media (hover: hover) and (pointer: fine) { .nav a:hover { color: var(--fg); } }
+.header .btn { height: 42px; padding-inline: 20px; font-size: 0.92rem; }
+@media (max-width: 860px) { .nav { display: none; } }
+
+/* Hero */
+.hero { position: relative; padding-block: clamp(40px, 6vw, 88px) clamp(56px, 8vw, 104px); }
+.hero::before {
+  content: ""; position: absolute; inset: -20% -10% auto -10%; height: 120%; pointer-events: none;
+  background:
+    radial-gradient(40% 50% at 28% 40%, rgba(91, 64, 216, 0.28), transparent 70%),
+    radial-gradient(30% 40% at 80% 10%, rgba(42, 24, 70, 0.9), transparent 70%);
+}
+.hero .wrap { position: relative; display: grid; grid-template-columns: 1.05fr 0.95fr; align-items: center; gap: clamp(32px, 5vw, 72px); }
+.hero-copy { display: grid; gap: 26px; min-width: 0; }
+.hero h1 { font-size: clamp(2.5rem, 5vw, 4.3rem); line-height: 1.12; }
+.hero h1 .accent { color: var(--violet); }
+.hero .lede { font-size: 1.15rem; max-width: 46ch; }
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 6px; }
+
+.load-in > * { animation: rise 700ms var(--ease-out) both; }
+.load-in > *:nth-child(2) { animation-delay: 60ms; }
+.load-in > *:nth-child(3) { animation-delay: 120ms; }
+.load-in > *:nth-child(4) { animation-delay: 180ms; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+
+.hero-visual { position: relative; display: grid; place-items: center; min-height: clamp(440px, 52vw, 620px); min-width: 0; }
+.hero-visual::before {
+  content: ""; position: absolute; inset: 8% 6%; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(124, 95, 255, 0.30), rgba(91, 64, 216, 0.08) 60%, transparent);
+  filter: blur(10px);
+}
+#orb { position: absolute; inset: 0; width: 100%; height: 100%; }
+.arch-wrap { position: relative; width: min(380px, 74%); animation: rise 900ms var(--ease-out) 200ms both; }
+.arch-wrap::before { /* hairline echo of the arch */
+  content: ""; position: absolute; inset: -12px; border: 1px solid var(--line-strong);
+  border-radius: 999px 999px 30px 30px; pointer-events: none;
+}
+.arch {
+  position: relative; isolation: isolate; overflow: hidden; aspect-ratio: 4 / 5.3; max-width: 100%;
+  border-radius: 999px 999px 22px 22px; background: var(--raised);
+  box-shadow: 0 50px 120px -30px rgba(60, 30, 150, 0.7);
+}
+.arch img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%;
+  transform: scale(1.38); transform-origin: 50% 14%;
+  filter: grayscale(1) contrast(1.1) brightness(0.82);
+}
+.arch .tint { position: absolute; inset: 0; background: #7458f0; mix-blend-mode: color; opacity: 0.55; }
+.arch .shade { position: absolute; inset: 0; background:
+  linear-gradient(to top, var(--ink) 0%, rgba(12,10,18,.55) 22%, transparent 48%),
+  radial-gradient(120% 70% at 50% 30%, transparent 55%, rgba(12,10,18,.55) 100%); }
+.no-portrait .arch-wrap { display: none; }
+
+/* Tools marquee */
+.tools { padding-block: 28px; border-block: 1px solid var(--line); }
+.tools .wrap { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 40px; }
+.tools-label { color: var(--muted); font-size: 0.92rem; white-space: nowrap; }
+.marquee { overflow: hidden; min-width: 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+.track { display: flex; width: max-content; animation: slide 46s linear infinite; }
+.track ul { display: flex; align-items: center; gap: 56px; padding: 0 56px 0 0; margin: 0; list-style: none; }
+.track li { font-family: var(--display); font-size: 1.1rem; color: #cfc6e6; white-space: nowrap; letter-spacing: 0.02em; }
+@keyframes slide { to { transform: translateX(-50%); } }
+@media (max-width: 720px) { .tools .wrap { grid-template-columns: 1fr; gap: 14px; } }
+
+/* Services bento */
+.section-head { display: grid; gap: 16px; margin-bottom: clamp(36px, 5vw, 60px); max-width: 680px; }
+.bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+.card {
+  position: relative; overflow: hidden; min-width: 0;
+  background: var(--raised); border: 1px solid var(--line); border-radius: var(--radius-card);
+  padding: clamp(24px, 2.6vw, 34px); display: flex; flex-direction: column; gap: 12px;
+}
+.card::after {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 0%), rgba(164, 139, 255, 0.7), transparent 60%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0; transition: opacity 300ms ease;
+}
+@media (hover: hover) and (pointer: fine) { .card:hover::after { opacity: 1; } }
+.card h3 { font-size: 1.4rem; line-height: 1.25; }
+.card p { color: var(--muted); font-size: 0.98rem; max-width: 46ch; }
+.card .tag { font-size: 0.78rem; color: var(--violet); font-weight: 500; letter-spacing: 0.06em; }
+.c-agents { grid-column: span 4; grid-row: span 2; justify-content: flex-end; min-height: 440px; }
+.c-flow, .c-chat { grid-column: span 2; }
+.c-know, .c-voice, .c-insight { grid-column: span 2; }
+
+.c-agents h3 { font-size: clamp(1.8rem, 2.6vw, 2.3rem); font-weight: 300; }
+.orbits { position: absolute; inset-block-start: 8%; inset-inline-end: 6%; width: 62%; aspect-ratio: 1; pointer-events: none; }
+.orbits .ring { position: absolute; inset: 0; margin: auto; border: 1px solid var(--line-strong); border-radius: 50%; transition: transform 1200ms var(--ease-in-out); }
+.orbits .r1 { width: 100%; height: 38%; transform: rotate(-18deg); }
+.orbits .r2 { width: 74%; height: 74%; }
+.orbits .r3 { width: 100%; height: 38%; transform: rotate(38deg); }
+.orbits .core { position: absolute; inset: 0; margin: auto; width: 22%; height: 22%; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #d7ccff, var(--violet-deep) 60%, #1a1030); box-shadow: 0 0 60px rgba(124,95,255,.55); }
+.orbits .node { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--halo); box-shadow: 0 0 14px var(--violet); }
+.orbits .n1 { top: 14%; left: 30%; } .orbits .n2 { bottom: 20%; right: 18%; } .orbits .n3 { top: 46%; left: 2%; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .c-agents:hover .r1 { transform: rotate(-4deg); }
+  .c-agents:hover .r3 { transform: rotate(52deg); }
+}
+
+.c-know { background:
+  radial-gradient(90% 80% at 100% 0%, rgba(91, 64, 216, 0.45), transparent 60%),
+  radial-gradient(70% 60% at 0% 100%, rgba(42, 24, 70, 0.9), transparent 70%), var(--raised); }
+.c-insight { background: linear-gradient(160deg, var(--raised-2), var(--raised)); }
+.c-insight .bars { display: flex; align-items: flex-end; gap: 6px; height: 48px; margin-top: auto; }
+.c-insight .bars span { flex: 1; border-radius: 4px 4px 0 0; background: linear-gradient(to top, rgba(164,139,255,.15), rgba(164,139,255,.7)); height: var(--h); }
+
+.wave { display: flex; align-items: center; gap: 4px; height: 48px; margin-top: auto; direction: ltr; }
+.wave span { flex: 1; max-width: 6px; border-radius: 3px; background: var(--violet); opacity: 0.75; height: var(--h); transform-origin: center; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .c-voice:hover .wave span { animation: talk 900ms var(--ease-in-out) infinite alternate; animation-delay: calc(var(--i) * -70ms); }
+}
+@keyframes talk { to { transform: scaleY(0.35); } }
+
+@media (max-width: 980px) {
+  .bento { grid-template-columns: repeat(2, 1fr); }
+  .c-agents { grid-column: span 2; grid-row: auto; min-height: 400px; }
+  .c-flow, .c-chat, .c-know, .c-voice, .c-insight { grid-column: span 1; }
+  .c-insight { grid-column: span 2; }
+}
+@media (max-width: 620px) {
+  .bento { grid-template-columns: 1fr; }
+  .c-agents, .c-flow, .c-chat, .c-know, .c-voice, .c-insight { grid-column: auto; }
+  .c-agents { min-height: 380px; }
+  .orbits { width: 70%; }
+}
+
+/* Manifesto */
+.manifesto { position: relative; }
+.manifesto .wrap { max-width: 1040px; }
+.manifesto p { font-family: var(--display); font-weight: 300; font-size: clamp(1.7rem, 3.6vw, 2.9rem); line-height: 1.42; text-wrap: pretty; }
+.manifesto .w { display: inline; }
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .manifesto .w { animation: lit linear both; animation-timeline: view(); animation-range: cover 18% cover 42%; }
+  }
+}
+@keyframes lit { from { opacity: 0.22; } to { opacity: 1; } }
+.manifesto .em { color: var(--violet); }
+
+/* Process */
+.process { border-top: 1px solid var(--line); }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; position: relative; }
+.steps::before { content: ""; position: absolute; inset-inline: 0; top: 7px; height: 1px; background: linear-gradient(to left, var(--violet), var(--line-strong) 70%, transparent); }
+.step { position: relative; display: grid; gap: 12px; padding-top: 40px; min-width: 0; }
+.step::before { content: ""; position: absolute; top: 0; inset-inline-start: 0; width: 15px; height: 15px; border-radius: 50%; background: var(--ink); border: 1px solid var(--violet); }
+.step h3 { font-size: 1.5rem; }
+.step p { color: var(--muted); font-size: 0.98rem; }
+@media (max-width: 860px) {
+  .steps { grid-template-columns: 1fr; gap: 0; }
+  .steps::before { top: 0; bottom: 0; inset-inline-start: 7px; inset-inline-end: auto; width: 1px; height: auto; background: linear-gradient(to bottom, var(--violet), var(--line-strong) 70%, transparent); }
+  .step { padding: 0 40px 36px 0; }
+  .step::before { top: 8px; }
+}
+
+/* About */
+.about .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 7vw, 110px); align-items: start; }
+.about-copy { display: grid; gap: 22px; min-width: 0; }
+.principles { list-style: none; margin: 0; padding: 0; display: grid; }
+.principles li { display: grid; grid-template-columns: 8.5rem 1fr; gap: 20px; padding-block: 26px; border-top: 1px solid var(--line); min-width: 0; }
+.principles li:last-child { border-bottom: 1px solid var(--line); }
+.principles strong { font-family: var(--display); font-weight: 400; font-size: 1.4rem; line-height: 1.2; color: var(--fg); }
+.principles span { color: var(--muted); }
+@media (max-width: 860px) { .about .wrap { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .principles li { grid-template-columns: 1fr; gap: 6px; } }
+
+/* FAQ */
+.faq .wrap { max-width: 900px; }
+.faq-list { display: grid; }
+.faq details { border-bottom: 1px solid var(--line); }
+.faq details:first-child { border-top: 1px solid var(--line); }
+.faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-block: 24px; font-size: 1.15rem; font-weight: 400; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary .plus { position: relative; flex: none; width: 16px; height: 16px; }
+.faq summary .plus::before, .faq summary .plus::after { content: ""; position: absolute; inset: 0; margin: auto; background: var(--violet); width: 16px; height: 1.5px; transition: transform 250ms var(--ease-out); }
+.faq summary .plus::after { transform: rotate(90deg); }
+.faq details[open] summary .plus::after { transform: rotate(0deg); }
+.faq details p { color: var(--muted); padding-bottom: 26px; max-width: 64ch; }
+
+/* Contact */
+.contact { position: relative; }
+.contact::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(50% 60% at 75% 50%, rgba(91, 64, 216, 0.22), transparent 70%); }
+.contact .wrap { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 6vw, 96px); align-items: start; }
+.contact-copy { display: grid; gap: 20px; min-width: 0; }
+.contact h2 { font-size: clamp(2.2rem, 4.4vw, 3.6rem); line-height: 1.12; }
+.panel { background: var(--raised); border: 1px solid var(--line); border-radius: var(--radius-card); padding: clamp(24px, 3vw, 38px); min-width: 0; }
+form { display: grid; gap: 20px; }
+.field { display: grid; gap: 8px; }
+.field label { font-size: 0.92rem; font-weight: 500; color: #d9d3e8; }
+.field input, .field textarea {
+  width: 100%; font: 400 1rem/1.5 var(--body); color: var(--fg); background: var(--ink);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-input); padding: 14px 16px;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+.field textarea { min-height: 120px; resize: vertical; }
+.field input:focus, .field textarea:focus { outline: none; border-color: var(--violet); box-shadow: 0 0 0 3px rgba(164,139,255,.2); }
+.field .err { color: #ffb4c4; font-size: 0.86rem; }
+form .btn { width: 100%; }
+.success { display: grid; gap: 12px; text-align: center; padding-block: 24px; }
+.success h3 { font-size: 1.7rem; }
+.success p { color: var(--muted); }
+.success .note { font-size: 0.85rem; }
+@media (max-width: 860px) { .contact .wrap { grid-template-columns: 1fr; } }
+
+/* Footer */
+.footer { border-top: 1px solid var(--line); padding-block: 36px; color: var(--muted); font-size: 0.9rem; }
+.footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; }
+.footer nav { display: flex; gap: 24px; flex-wrap: wrap; }
+
+/* Reveal on scroll (only for elements that start below the fold) */
+[data-reveal] { transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out); transition-delay: calc(var(--i, 0) * 70ms); }
+[data-reveal].pending { opacity: 0; transform: translateY(16px); }
+
+/* Mobile hero */
+@media (max-width: 860px) {
+  .hero .wrap { grid-template-columns: 1fr; }
+  .hero-visual { min-height: 460px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .load-in > *, .arch-wrap { animation: none; }
+  .track { animation: none; flex-wrap: wrap; width: auto; }
+  .track ul[aria-hidden] { display: none; }
+  .track ul { flex-wrap: wrap; gap: 14px 36px; padding: 0; }
+  .marquee { -webkit-mask-image: none; mask-image: none; }
+  [data-reveal] { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="site" dir="rtl" lang="he">
+
+  <header class="header">
+    <div class="wrap">
+      <a class="brand" href="#top" aria-label="Umbra, לראש העמוד">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">UMBRA</span>
+      </a>
+      <nav class="nav" aria-label="ניווט ראשי">
+        <a href="#services">שירותים</a>
+        <a href="#process">איך עובדים</a>
+        <a href="#about">מי אנחנו</a>
+        <a href="#faq">שאלות</a>
+      </nav>
+      <a class="btn btn-primary" href="#contact">לשיחת היכרות</a>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="wrap">
+        <div class="hero-copy load-in">
+          <span class="eyebrow">סטודיו לאוטומציה ובינה מלאכותית</span>
+          <h1 id="hero-title">בינה שעובדת<br><span class="accent">מאחורי הקלעים.</span></h1>
+          <p class="lede">אנחנו בונים סוכני AI ואוטומציות שמורידים מהצוות שלכם עבודה שחוזרת על עצמה, כדי שתתפנו למה שחשוב באמת.</p>
+          <div class="hero-ctas">
+            <a class="btn btn-primary" href="#contact">לשיחת היכרות <span class="arrow" aria-hidden="true">←</span></a>
+            <a class="btn btn-ghost" href="#services">מה אנחנו בונים</a>
+          </div>
+        </div>
+
+        <div class="hero-visual" id="heroVisual">
+          <canvas id="orb" aria-hidden="true"></canvas>
+          <div class="arch-wrap">
+            <div class="arch">
+              <!-- Portrait: place the photo next to this file as portrait.jpg -->
+              <img src="portrait.jpg" alt="הפנים מאחורי הסטודיו" decoding="async"
+                   onerror="this.closest('.hero-visual').classList.add('no-portrait')">
+              <span class="tint" aria-hidden="true"></span>
+              <span class="shade" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="tools" aria-label="כלים שאנחנו עובדים איתם">
+      <div class="wrap">
+        <span class="tools-label">מתחברים לכלים שכבר עובדים אצלכם</span>
+        <div class="marquee" dir="ltr">
+          <div class="track">
+            <ul>
+              <li>n8n</li><li>Make</li><li>Zapier</li><li>OpenAI</li><li>Claude</li><li>Gemini</li>
+              <li>WhatsApp Business</li><li>HubSpot</li><li>monday.com</li><li>Airtable</li><li>Google Workspace</li><li>Slack</li>
+            </ul>
+            <ul aria-hidden="true">
+              <li>n8n</li><li>Make</li><li>Zapier</li><li>OpenAI</li><li>Claude</li><li>Gemini</li>
+              <li>WhatsApp Business</li><li>HubSpot</li><li>monday.com</li><li>Airtable</li><li>Google Workspace</li><li>Slack</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section id="services" aria-labelledby="services-title">
+      <div class="wrap">
+        <div class="section-head" data-reveal>
+          <h2 class="h2" id="services-title">מה אנחנו בונים</h2>
+          <p class="lede">שישה דברים שאנחנו עושים טוב, ומחברים אותם יחד לפי מה שהעסק שלכם צריך.</p>
+        </div>
+
+        <div class="bento">
+          <article class="card c-agents" data-reveal style="--i:0">
+            <div class="orbits" aria-hidden="true">
+              <span class="ring r1"></span><span class="ring r2"></span><span class="ring r3"></span>
+              <span class="core"></span>
+              <span class="node n1"></span><span class="node n2"></span><span class="node n3"></span>
+            </div>
+            <span class="tag">הטרנד של השנה</span>
+            <h3>סוכני AI</h3>
+            <p>עובדים דיגיטליים שמבינים הקשר, מקבלים החלטות ומבצעים משימות מקצה לקצה: מענה ללידים, טיפול בפניות ועדכון המערכות שלכם.</p>
+          </article>
+
+          <article class="card c-flow" data-reveal style="--i:1">
+            <h3>אוטומציית תהליכים</h3>
+            <p>מחברים בין המערכות שלכם כך שהמידע עובר לבד, בלי העתק-הדבק ובלי טעויות.</p>
+          </article>
+
+          <article class="card c-chat" data-reveal style="--i:2">
+            <h3>בוטים לוואטסאפ ולאתר</h3>
+            <p>מענה מיידי ללקוחות בכל שעה, בשפה של המותג שלכם, עם העברה חלקה לנציג כשצריך.</p>
+          </article>
+
+          <article class="card c-know" data-reveal style="--i:0">
+            <h3>מאגר ידע חכם</h3>
+            <p>צ'אט פנימי שעונה מתוך המסמכים, הנהלים והידע של החברה. כל עובד מקבל תשובה בשניות.</p>
+          </article>
+
+          <article class="card c-voice" data-reveal style="--i:1">
+            <h3>סוכנים קוליים</h3>
+            <p>שיחות טלפון בקול טבעי: תיאום פגישות, סינון לידים ומעקב אחרי לקוחות.</p>
+            <div class="wave" aria-hidden="true">
+              <span style="--h:30%;--i:0"></span><span style="--h:62%;--i:1"></span><span style="--h:44%;--i:2"></span><span style="--h:88%;--i:3"></span>
+              <span style="--h:56%;--i:4"></span><span style="--h:100%;--i:5"></span><span style="--h:70%;--i:6"></span><span style="--h:38%;--i:7"></span>
+              <span style="--h:76%;--i:8"></span><span style="--h:50%;--i:9"></span><span style="--h:92%;--i:10"></span><span style="--h:34%;--i:11"></span>
+              <span style="--h:64%;--i:12"></span><span style="--h:42%;--i:13"></span><span style="--h:80%;--i:14"></span><span style="--h:28%;--i:15"></span>
+              <span style="--h:58%;--i:16"></span><span style="--h:36%;--i:17"></span><span style="--h:20%;--i:18"></span>
+            </div>
+          </article>
+
+          <article class="card c-insight" data-reveal style="--i:2">
+            <h3>דוחות ותובנות</h3>
+            <p>נתונים מכל המערכות מתכנסים לתמונה אחת, עם סיכום שבועי שנכתב אוטומטית.</p>
+            <div class="bars" aria-hidden="true">
+              <span style="--h:34%"></span><span style="--h:48%"></span><span style="--h:41%"></span><span style="--h:62%"></span>
+              <span style="--h:57%"></span><span style="--h:73%"></span><span style="--h:69%"></span><span style="--h:88%"></span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="manifesto" aria-label="הגישה שלנו">
+      <div class="wrap">
+        <p id="manifesto">רוב העבודה בעסק לא באמת צריכה אתכם. היא רק צריכה שמישהו יעשה אותה, כל יום, בלי לשכוח. <span class="em">את החלק הזה אנחנו מעבירים למכונה.</span></p>
+      </div>
+    </section>
+
+    <section class="process" id="process" aria-labelledby="process-title">
+      <div class="wrap">
+        <div class="section-head" data-reveal>
+          <h2 class="h2" id="process-title">ככה זה עובד</h2>
+          <p class="lede">תהליך קצר וברור, בלי הפתעות. אתם יודעים בכל רגע איפה הפרויקט עומד.</p>
+        </div>
+        <ol class="steps">
+          <li class="step" data-reveal style="--i:0"><h3>מאבחנים</h3><p>שיחה אחת שבה ממפים את התהליכים שגוזלים הכי הרבה זמן, ובוחרים איפה להתחיל.</p></li>
+          <li class="step" data-reveal style="--i:1"><h3>מתכננים</h3><p>אפיון קצר: מה נבנה, כמה זמן זה יחסוך לכם, ואיך נמדוד את זה.</p></li>
+          <li class="step" data-reveal style="--i:2"><h3>בונים</h3><p>פיתוח בגרסאות קטנות, עם בדיקה שלכם בכל שלב לפני שממשיכים.</p></li>
+          <li class="step" data-reveal style="--i:3"><h3>מלווים</h3><p>ניטור, שיפורים והדרכה לצוות, כדי שהמערכת תמשיך לעבוד גם בעוד שנה.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="about" id="about" aria-labelledby="about-title">
+      <div class="wrap">
+        <div class="about-copy" data-reveal>
+          <span class="eyebrow">מי אנחנו</span>
+          <h2 class="h2" id="about-title">סטודיו קטן, בכוונה.</h2>
+          <p class="lede">אנחנו עובדים עם מספר מצומצם של עסקים בכל רבעון, כדי שכל פרויקט יקבל יחס אישי ומעקב צמוד. כל מה שנבנה שייך לכם: הקוד, החשבונות והידע.</p>
+        </div>
+        <ul class="principles">
+          <li data-reveal style="--i:0"><strong>שקיפות</strong><span>אתם רואים כל שלב ויודעים בדיוק על מה אתם משלמים.</span></li>
+          <li data-reveal style="--i:1"><strong>בעלות</strong><span>המערכות נבנות על החשבונות שלכם, בלי תלות בנו לאורך זמן.</span></li>
+          <li data-reveal style="--i:2"><strong>מדידה</strong><span>מודדים זמן וכסף לפני ואחרי, כדי לדעת שזה באמת עובד.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="faq" id="faq" aria-labelledby="faq-title">
+      <div class="wrap">
+        <div class="section-head" data-reveal>
+          <h2 class="h2" id="faq-title">שאלות שחוזרות</h2>
+        </div>
+        <div class="faq-list" data-reveal>
+          <details>
+            <summary>צריך ידע טכני כדי לעבוד איתכם?<span class="plus" aria-hidden="true"></span></summary>
+            <p>לא. אתם מכירים את העסק, אנחנו מתרגמים אותו לתהליכים. בסוף מקבלים מערכת שעובדת והדרכה קצרה לצוות.</p>
+          </details>
+          <details>
+            <summary>כמה זמן לוקח לראות תוצאות?<span class="plus" aria-hidden="true"></span></summary>
+            <p>פרויקט ראשון וממוקד עולה לאוויר בדרך כלל תוך שבועות ספורים. את לוח הזמנים המדויק קובעים יחד בשלב האפיון.</p>
+          </details>
+          <details>
+            <summary>מה עם אבטחת המידע שלנו?<span class="plus" aria-hidden="true"></span></summary>
+            <p>המערכות נבנות על החשבונות שלכם, עם הרשאות מינימליות, ובלי לשמור מידע רגיש מחוץ לסביבה שלכם.</p>
+          </details>
+          <details>
+            <summary>עם אילו מערכות אתם עובדים?<span class="plus" aria-hidden="true"></span></summary>
+            <p>כמעט כל מערכת שיש לה ממשק: CRM, וואטסאפ, Google Workspace, הנהלת חשבונות ועוד. אם אין ממשק, בודקים יחד חלופות.</p>
+          </details>
+          <details>
+            <summary>כמה זה עולה?<span class="plus" aria-hidden="true"></span></summary>
+            <p>כל פרויקט מתומחר לפי היקף. אחרי שיחת ההיכרות נחזור אליכם עם הצעה מסודרת וברורה.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="wrap">
+        <div class="contact-copy" data-reveal>
+          <span class="eyebrow">שיחת היכרות</span>
+          <h2 id="contact-title">מה הייתם מעבירים למכונה כבר מחר?</h2>
+          <p class="lede">ספרו לנו בכמה מילים, ונחזור אליכם עם רעיון ראשון. בלי התחייבות.</p>
+        </div>
+        <div class="panel" data-reveal style="--i:1">
+          <form id="leadForm" novalidate>
+            <div class="field">
+              <label for="f-name">שם מלא</label>
+              <input id="f-name" name="name" type="text" autocomplete="name" required>
+              <span class="err" id="e-name" hidden>נשמח לדעת איך לפנות אליכם.</span>
+            </div>
+            <div class="field">
+              <label for="f-contact">טלפון או מייל</label>
+              <input id="f-contact" name="contact" type="text" autocomplete="email" inputmode="email" required>
+              <span class="err" id="e-contact" hidden>צריך טלפון או מייל כדי שנוכל לחזור אליכם.</span>
+            </div>
+            <div class="field">
+              <label for="f-need">מה הייתם רוצים לייעל?</label>
+              <textarea id="f-need" name="need" placeholder="למשל: מענה ללידים מהאתר, הפקת חשבוניות, תיאום פגישות"></textarea>
+            </div>
+            <button class="btn btn-primary" type="submit">שליחה</button>
+          </form>
+          <div class="success" id="formSuccess" hidden>
+            <h3>תודה, קיבלנו.</h3>
+            <p>נחזור אליכם תוך יום עסקים.</p>
+            <p class="note">גרסת תצוגה: הטופס יחובר לפני העלייה לאוויר.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <a class="brand" href="#top" aria-label="Umbra, לראש העמוד">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">UMBRA</span>
+      </a>
+      <nav aria-label="ניווט תחתון">
+        <a href="#services">שירותים</a>
+        <a href="#process">איך עובדים</a>
+        <a href="#faq">שאלות</a>
+        <a href="#contact">צור קשר</a>
+      </nav>
+      <span>© 2026 Umbra. כל הזכויות שמורות.</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  /* Particle sphere behind the portrait */
+  const canvas = document.getElementById('orb');
+  const ctx = canvas.getContext('2d');
+  const N = 1100, pts = [];
+  const golden = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < N; i++) {
+    const y = 1 - (i / (N - 1)) * 2, r = Math.sqrt(1 - y * y), t = golden * i;
+    pts.push([Math.cos(t) * r, y, Math.sin(t) * r, Math.random()]);
+  }
+  let w = 0, h = 0, rotY = 0, tilt = -0.28, tiltTarget = -0.28, yaw = 0, yawTarget = 0, raf = 0, visible = true;
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    const R = Math.min(w, h) * 0.46, cx = w / 2, cy = h * 0.47;
+    const cY = Math.cos(rotY + yaw), sY = Math.sin(rotY + yaw), cX = Math.cos(tilt), sX = Math.sin(tilt);
+    for (const p of pts) {
+      const x = p[0] * cY - p[2] * sY;
+      let z = p[0] * sY + p[2] * cY;
+      const y = p[1] * cX - z * sX;
+      z = p[1] * sX + z * cX;
+      const persp = 3 / (4 - z);
+      const d = (z + 1) / 2;
+      const s = 0.7 + d * 1.6 + p[3] * 0.5;
+      ctx.fillStyle = `rgba(${(168 + d * 70) | 0},${(146 + d * 86) | 0},255,${0.07 + d * d * 0.8})`;
+      ctx.fillRect(cx + x * R * persp - s / 2, cy + y * R * persp - s / 2, s, s);
+    }
+  }
+  function tick() {
+    rotY += 0.0017;
+    tilt += (tiltTarget - tilt) * 0.04;
+    yaw += (yawTarget - yaw) * 0.04;
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+  function start() { if (!reduce && !raf && visible && !document.hidden) raf = requestAnimationFrame(tick); }
+  function stop() { cancelAnimationFrame(raf); raf = 0; }
+  function resize() {
+    const b = canvas.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = b.width; h = b.height;
+    canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
+  new ResizeObserver(resize).observe(canvas);
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? start() : stop(); }).observe(canvas);
+  document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+  if (finePointer && !reduce) {
+    window.addEventListener('pointermove', (e) => {
+      tiltTarget = -0.28 + (e.clientY / innerHeight - 0.5) * 0.35;
+      yawTarget = (e.clientX / innerWidth - 0.5) * 0.6;
+    }, { passive: true });
+  }
+  resize(); start();
+
+  /* Spotlight border on cards */
+  if (finePointer) {
+    document.querySelectorAll('.card').forEach((card) => {
+      card.addEventListener('pointermove', (e) => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+        card.style.setProperty('--my', `${e.clientY - r.top}px`);
+      });
+    });
+  }
+
+  /* Manifesto: wrap words so each lights up as it scrolls into view */
+  const m = document.getElementById('manifesto');
+  const wrapWords = (node) => {
+    [...node.childNodes].forEach((child) => {
+      if (child.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        child.textContent.split(/(\s+)/).forEach((part) => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+          const s = document.createElement('span'); s.className = 'w'; s.textContent = part; frag.appendChild(s);
+        });
+        child.replaceWith(frag);
+      } else if (child.nodeType === 1) wrapWords(child);
+    });
+  };
+  wrapWords(m);
+
+  /* Reveal: only elements that start below the fold get hidden, so the page is complete at rest */
+  if (!reduce && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.remove('pending'); io.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('[data-reveal]').forEach((el) => {
+      if (el.getBoundingClientRect().top > innerHeight) { el.classList.add('pending'); io.observe(el); }
+    });
+  }
+
+  /* Contact form (preview: not connected to a backend yet) */
+  const form = document.getElementById('leadForm');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('f-name'), contact = document.getElementById('f-contact');
+    const okName = name.value.trim().length > 1, okContact = contact.value.trim().length > 5;
+    document.getElementById('e-name').hidden = okName;
+    document.getElementById('e-contact').hidden = okContact;
+    name.setAttribute('aria-invalid', String(!okName));
+    contact.setAttribute('aria-invalid', String(!okContact));
+    if (!okName) { name.focus(); return; }
+    if (!okContact) { contact.focus(); return; }
+    form.hidden = true;
+    document.getElementById('formSuccess').hidden = false;
+  });
+})();
+</script>
+</body>
+</html>
